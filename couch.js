@@ -55,6 +55,10 @@ function CouchDB () {
     // Track pending dbs to determine when all are done.
     var pending_dbs = {};
 
+    // Avoid the warning for "too many" event listeners.
+    process.on('unused', function() {}); // This avoids an undefined reference exception.
+    process.setMaxListeners(dbs.length + 10);
+
     dbs.forEach(function(db_name) {
       var db = new Database;
       db.couch = self.url;
