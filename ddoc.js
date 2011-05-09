@@ -58,7 +58,7 @@ DesignDocument.prototype.start = function() {
     throw new Error("Document ID required");
 
   // Since this is a design document, the slash must be kept.
-  self.url = lib.join(self.db, encodeURIComponent(self.id).replace(/^_design%2[fF]/, '_design/'));
+  self.url = lib.join(self.db, lib.encode_id(self.id));
   self.x_emit('start');
 }
 
