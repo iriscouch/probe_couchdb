@@ -56,8 +56,14 @@ function join_and_fix_slashes() {
   }]).join('/');
 }
 
+// Encode a document ID, which means escape it *except* the slash in a design document.
+function encode_doc_id(id) {
+  var encoded = encodeURIComponent(id);
+  return encoded.replace(/^_design%2[fF]/, '_design/');
+}
 
 module.exports = { "getLogger"  : getLogger
-                 , "join"       : join_and_fix_slashes
                  , "get_creds"  : get_creds
+                 , "join"       : join_and_fix_slashes
+                 , "encode_id"  : encode_doc_id
                  };
