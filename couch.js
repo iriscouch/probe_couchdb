@@ -116,7 +116,7 @@ function CouchDB () {
     }
 
     // Of course, the anonymous user is always known to exist.
-    var anonymous_users = [ { name:null, roles: [] } ];
+    var anonymous_users = [ self.anonymous_user() ];
 
     var auth_db_url = lib.join(self.url, encodeURIComponent(auth_db).replace(/^_design%2[fF]/, '_design/'));
     self.log.debug("Checking auth_db: " + auth_db_url);
@@ -172,6 +172,11 @@ CouchDB.prototype.start = function() {
     throw new Error("url required");
 
   self.x_emit('start');
+}
+
+CouchDB.prototype.anonymous_user = function() {
+  var self = this;
+  return { name:null, roles: [] };
 }
 
 module.exports = { "CouchDB": CouchDB
