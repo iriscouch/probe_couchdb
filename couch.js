@@ -145,7 +145,9 @@ function CouchDB () {
           if(resp.statusCode !== 200 || !Array.isArray(body.rows))
             throw new Error("Failed to fetch user listing from " + users_query + ": " + JSON.stringify(body));
 
-          var users = body.rows.map(function(row) { return row.doc });
+          var users = body.rows
+                      .filter(function(row) { return row.id !== "org.couchdb.user;" })
+                      .map(function(row) { return row.doc });
           self.log.debug("Found " + (users.length+1) + " users (including anonymous): " + auth_db_url);
           self.x_emit('users', anonymous_users.concat(users));
         })
