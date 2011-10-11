@@ -9,6 +9,8 @@
 , "engines": [ "node" ]
 , "dependencies": { "request": "2.1.1"
                   }
+, "devDependencies": { "log4js": "0.3.9"
+                     }
 , "main": "api"
 , "bin": {"probe_couchdb": "./cli.js"}
 }
