@@ -1,6 +1,13 @@
 // Miscellaneous helpers
 //
 
+module.exports = { "getLogger"  : getLogger
+                 , "get_creds"  : get_creds
+                 , "join"       : join_and_fix_slashes
+                 , "encode_id"  : encode_doc_id
+                 };
+
+
 // log4js is optional.
 function getLogger(label) {
   var log;
@@ -61,9 +68,3 @@ function encode_doc_id(id) {
   var encoded = encodeURIComponent(id);
   return encoded.replace(/^_design%2[fF]/, '_design/');
 }
-
-module.exports = { "getLogger"  : getLogger
-                 , "get_creds"  : get_creds
-                 , "join"       : join_and_fix_slashes
-                 , "encode_id"  : encode_doc_id
-                 };
