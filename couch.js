@@ -21,9 +21,9 @@ function CouchDB () {
     self.log.debug("Pinging: " + self.url);
     self.request({uri:self.url}, function(er, resp, body) {
       if(er)
-        throw er;
+        return self.x_emit('error', er);
       else if(resp.statusCode !== 200 || body.couchdb !== "Welcome")
-        throw new Error("Bad welcome from " + self.url + ": " + JSON.stringify(body));
+        return self.x_emit('error', new Error("Bad welcome from " + self.url + ": " + JSON.stringify(body)));
       else
         self.x_emit('couchdb', body);
     })
@@ -33,9 +33,10 @@ function CouchDB () {
     var all_dbs = lib.join(self.url, '/_all_dbs');
     self.log.debug("Scanning databases: " + all_dbs);
     self.request({uri:all_dbs}, function(er, resp, body) {
-      if(er) throw er;
+      if(er)
+        return self.x_emit('error', er);
       if(resp.statusCode !== 200 || !Array.isArray(body))
-        throw new Error("Bad _all_dbs from " + all_dbs + ": " + JSON.stringify(body));
+        return self.x_emit('error', new Error("Bad _all_dbs from " + all_dbs + ": " + JSON.stringify(body)));
 
       self.log.debug(self.url + ' has ' + body.length + ' databases');
       var dbs = body.filter(function(db) { return !self.only_dbs || self.only_dbs.indexOf(db) !== -1 });
@@ -64,6 +65,8 @@ function CouchDB () {
       db.couch = self.url;
       db.name = db_name;
 
+      db.on('error', function(er) { self.x_emit('error', er) });
+
       pending_dbs[db.name] = db;
       db.on('end', function mark_db_done() {
         delete pending_dbs[db.name];
@@ -87,9 +90,10 @@ function CouchDB () {
     var session_url = lib.join(self.url, '/_session');
     self.log.debug("Checking login session: " + session_url);
     self.request({uri:session_url}, function(er, resp, session) {
-      if(er) throw er;
+      if(er)
+        return self.x_emit('error', er);
       if(resp.statusCode !== 200 || (!session) || session.ok !== true)
-        throw new Error("Bad _session from " + session_url + ": " + JSON.stringify(session));
+        return self.x_emit('error', new Error("Bad _session from " + session_url + ": " + JSON.stringify(session)));
 
       self.log.debug("Received session: " + JSON.stringify(session));
       if( ((session.userCtx || {}).roles || []).indexOf('_admin') === -1 )
@@ -102,7 +106,8 @@ function CouchDB () {
     var config_url = lib.join(self.url, '/_config');
     self.log.debug("Checking config: " + config_url);
     self.request({uri:config_url}, function(er, resp, config) {
-      if(er) throw er;
+      if(er)
+        return self.x_emit('error', er);
       if(resp.statusCode !== 200 || (typeof config !== 'object')) {
         self.log.debug("Bad config response: " + JSON.stringify(config));
         config = null;
@@ -125,13 +130,14 @@ function CouchDB () {
     var auth_db_url = lib.join(self.url, encodeURIComponent(auth_db).replace(/^_design%2[fF]/, '_design/'));
     self.log.debug("Checking auth_db: " + auth_db_url);
     self.request({uri:auth_db_url}, function(er, resp, body) {
-      if(er) throw er;
+      if(er)
+        return self.x_emit('error', er);
       if(resp.statusCode !== 200 || typeof config !== 'object') {
         self.log.warn("Can not access authentication_db: " + auth_db_url);
         // Signal the end of the users discovery.
         self.x_emit('users', anonymous_users);
       } else if(body.doc_count > self.max_users) {
-        throw new Error("Too many users; you must add a view to process them");
+        return self.x_emit('error', new Error("Too many users; you must add a view to process them"));
         // TODO
       } else {
         var users_query = lib.join(auth_db_url, '/_all_docs'
@@ -144,9 +150,10 @@ function CouchDB () {
                                               );
         self.log.debug("Fetching all users: " + users_query);
         self.request({uri:users_query}, function(er, resp, body) {
-          if(er) throw er;
+          if(er)
+            return self.x_emit('error', er);
           if(resp.statusCode !== 200 || !Array.isArray(body.rows))
-            throw new Error("Failed to fetch user listing from " + users_query + ": " + JSON.stringify(body));
+            return self.x_emit('error', new Error("Failed to fetch user listing from " + users_query + ": " + JSON.stringify(body)));
 
           var users = body.rows
                       .filter(function(row) { return /^org\.couchdb\.user:/.test(row.id) })

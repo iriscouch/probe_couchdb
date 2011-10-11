@@ -19,9 +19,9 @@ function DesignDocument () {
     self.log.debug("Fetching design document: " + self.url);
     self.request({uri:self.url}, function(er, resp, body) {
       if(er)
-        throw er;
+        return self.x_emit('error', er);
       else if(resp.statusCode !== 200 || typeof body !== 'object')
-        throw new Error("Bad ddoc response from " + self.url + ": " + JSON.stringify({code:resp.statusCode, body:body}));
+        return self.x_emit('error', new Error("Bad ddoc response from " + self.url + ": " + JSON.stringify({code:resp.statusCode, body:body})));
 
       self.x_emit('body', body);
     })
@@ -32,9 +32,9 @@ function DesignDocument () {
     self.log.debug("Fetching ddoc info: " + info_url);
     self.request({uri:info_url}, function(er, resp, body) {
       if(er)
-        throw er;
+        return self.x_emit('error', er);
       else if(resp.statusCode !== 200 || typeof body !== 'object')
-        throw new Error("Bad ddoc response from " + info_url + ": " + JSON.stringify({code:resp.statusCode, body:body}));
+        return self.x_emit('error', new Error("Bad ddoc response from " + info_url + ": " + JSON.stringify({code:resp.statusCode, body:body})));
 
       self.x_emit('info', body);
     })

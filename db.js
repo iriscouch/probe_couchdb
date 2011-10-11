@@ -20,14 +20,14 @@ function Database () {
     self.log.debug("Fetching db metadata: " + self.url);
     self.request({uri:self.url}, function(er, resp, info) {
       if(er)
-        throw er;
+        return self.x_emit('error', er);
       else if(resp.statusCode === 401 && typeof info === 'object' && info.error === 'unauthorized')
         // Indicate no read permission.
         self.x_emit('metadata', null);
       else if(resp.statusCode === 200 && typeof info === 'object')
         self.x_emit('metadata', info);
       else
-        throw new Error("Unknown db responses: " + JSON.stringify(info));
+        return self.x_emit('error', new Error("Unknown db responses: " + JSON.stringify(info)));
     })
   })
 
@@ -36,14 +36,14 @@ function Database () {
     self.log.debug("Fetching db security data: " + sec_url);
     self.request({uri:sec_url}, function(er, resp, security) {
       if(er)
-        throw er;
+        return self.x_emit('error', er);
       else if(resp.statusCode === 401 && typeof security === 'object' && security.error === 'unauthorized')
         // Indicate no read permission.
         self.x_emit('security', null);
       else if(resp.statusCode === 200 && typeof security === 'object')
         self.x_emit('security', security);
       else
-        throw new Error("Unknown db responses: " + JSON.stringify(security));
+        return self.x_emit('error', new Error("Unknown db responses: " + JSON.stringify(security)));
     })
   })
 
@@ -56,7 +56,7 @@ function Database () {
     self.log.debug("Scanning for design documents: " + self.name);
     self.request({uri:view}, function(er, resp, body) {
       if(er)
-        throw er;
+        return self.x_emit('error', er);
       else if(resp.statusCode === 401 && typeof body === 'object' && body.error === 'unauthorized') {
         // Indicate no read permisssion.
         self.x_emit('ddoc_ids', null);
@@ -65,7 +65,7 @@ function Database () {
         self.log.debug(self.name + ' has ' + ids.length + ' design documents: ' + ids.join(', '));
         self.x_emit('ddoc_ids', ids);
       } else
-        throw new Error("Bad ddoc response from " + view + ": " + JSON.stringify({code:resp.statusCode, body:body}));
+        return self.x_emit('error', new Error("Bad ddoc response from " + view + ": " + JSON.stringify({code:resp.statusCode, body:body})));
     })
   })
 
@@ -85,6 +85,8 @@ function Database () {
       var ddoc = new DesignDocument;
       ddoc.db = self.url;
       ddoc.id = id;
+
+      ddoc.on('error', function(er) { self.x_emit('error', er) });
 
       pending_ddocs[ddoc.id] = ddoc;
       ddoc.on('end', function mark_ddoc_done() {
