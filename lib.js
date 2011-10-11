@@ -23,7 +23,8 @@ function getLogger(label) {
           , "error": console.log
           , "fatal": console.log
           }
-    log.setLevel = function noop() {};
+    log.setLevel = function() {};
+    log.getLevel = function() {};
   }
 
   // Scrub credentials.
