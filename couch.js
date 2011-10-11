@@ -71,14 +71,19 @@ function CouchDB () {
       db.couch = self.url;
       db.name = db_name;
 
-      db.on('error', function(er) { self.x_emit('error', er) });
-
       pending_dbs[db.name] = db;
-      db.on('end', function mark_db_done() {
+
+      db.on('end', mark_db_done);
+      db.on('error', function(er) {
+        mark_db_done();
+        self.x_emit('error', er)
+      })
+
+      function mark_db_done() {
         delete pending_dbs[db.name];
         if(Object.keys(pending_dbs).length === 0)
           self.x_emit('end_dbs');
-      })
+      }
 
       process.on('exit', function() {
         var names = Object.keys(pending_dbs);

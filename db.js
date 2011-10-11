@@ -86,14 +86,19 @@ function Database () {
       ddoc.db = self.url;
       ddoc.id = id;
 
-      ddoc.on('error', function(er) { self.x_emit('error', er) });
-
       pending_ddocs[ddoc.id] = ddoc;
-      ddoc.on('end', function mark_ddoc_done() {
+
+      ddoc.on('end', mark_ddoc_done);
+      ddoc.on('error', function(er) {
+        mark_ddoc_done();
+        self.x_emit('error', er)
+      })
+
+      function mark_ddoc_done() {
         delete pending_ddocs[ddoc.id];
         if(Object.keys(pending_ddocs).length === 0)
           self.x_emit('end_ddocs');
-      })
+      }
 
       self.x_emit('ddoc', ddoc);
       ddoc.start();
