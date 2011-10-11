@@ -39,8 +39,14 @@ function CouchDB () {
         return self.x_emit('error', new Error("Bad _all_dbs from " + all_dbs + ": " + JSON.stringify(body)));
 
       self.log.debug(self.url + ' has ' + body.length + ' databases');
-      var dbs = body.filter(function(db) { return !self.only_dbs || self.only_dbs.indexOf(db) !== -1 });
-      self.x_emit('dbs', dbs);
+
+      var db_names = body;
+      if(Array.isArray(self.only_dbs))
+        db_names = db_names.filter(function(name) { return ~ self.only_dbs.indexOf(name) });
+      else if(lib.isRegExp(self.only_dbs))
+        db_names = db_names.filter(function(name) { return self.only_dbs.test(name) });
+
+      self.x_emit('dbs', db_names);
     })
   })
 
