@@ -85,7 +85,7 @@ function Database () {
       var ddoc = new DesignDocument;
       ddoc.db = self.url;
       ddoc.id = id;
-      ddoc.log.setLevel(self.log.getLevel());
+      ddoc.log.setLevel(self.log.level);
 
       pending_ddocs[ddoc.id] = ddoc;
 
