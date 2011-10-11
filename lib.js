@@ -5,6 +5,7 @@ module.exports = { "getLogger"  : getLogger
                  , "get_creds"  : get_creds
                  , "join"       : join_and_fix_slashes
                  , "encode_id"  : encode_doc_id
+                 , "isRegExp"   : isRegExp
                  };
 
 
@@ -67,4 +68,16 @@ function join_and_fix_slashes() {
 function encode_doc_id(id) {
   var encoded = encodeURIComponent(id);
   return encoded.replace(/^_design%2[fF]/, '_design/');
+}
+
+function isRegExp(obj) {
+  var str = '' + obj;
+  return !! ( obj instanceof RegExp ||
+              typeof obj === 'function' &&
+              obj.constructor.name === 'RegExp' &&
+              obj.compile &&
+              obj.test &&
+              obj.exec &&
+              str.match(/^\/.*\/[gim]{0,3}$/)
+            )
 }
