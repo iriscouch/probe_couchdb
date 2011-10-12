@@ -16,6 +16,7 @@
 
 require('defaultable')(module,
   { 'http_proxy': process.env.http_proxy
+  , 'log_label' : 'probe_couchdb'
   }, function(module, exports, DEFS, require) {
 
 
@@ -34,7 +35,7 @@ function Emitter (log_label) {
   var self = this;
   events.EventEmitter.call(self);
 
-  self.log = lib.getLogger(log_label ? ('probe_couchdb.'+log_label) : 'probe_couchdb');
+  self.log = lib.getLogger(log_label ? ('probe_couchdb.'+log_label) : DEFS.log_label);
 
   // Callbacks can register for "known" states either before or after the information
   // actually becomes known. If before, they will queue up until it is known, then run
