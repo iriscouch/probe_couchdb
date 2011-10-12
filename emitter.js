@@ -14,11 +14,21 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
+require('defaultable')(module,
+  { 'http_proxy': process.env.http_proxy
+  }, function(module, exports, DEFS, require) {
+
+
 var lib = require('./lib')
   , util = require('util')
   , events = require('events')
   , request = require('request')
   ;
+
+
+module.exports = { "Emitter" : Emitter
+                 };
+
 
 function Emitter (log_label) {
   var self = this;
@@ -47,7 +57,7 @@ Emitter.prototype.request = function request_wrapper(opts, callback) {
     return callback && callback.apply(this, [er, resp, body]);
   }
 
-  opts.proxy  = opts.proxy  || self.proxy || process.env.http_proxy;
+  opts.proxy  = opts.proxy  || self.proxy || DEFS.http_proxy;
   opts.client = opts.client || self.client;
   opts.followRedirect = false;
 
@@ -101,5 +111,4 @@ Emitter.prototype.x_emit = function push_emit() {
   })
 }
 
-module.exports = { "Emitter" : Emitter
-                 };
+}) // defaultable

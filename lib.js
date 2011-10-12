@@ -18,10 +18,10 @@ var log4js = require('log4js')
   , defaultable = require('defaultable')
   ;
 
-module.exports = defaultable(
-{ 'log_label': 'probe_couchdb'
-, 'log_level': 'info'
-}, function(module, exports, DEFS) {
+defaultable(module,
+  { 'log_label': 'probe_couchdb'
+  , 'log_level': 'info'
+  }, function(module, exports, DEFS, require) {
 
 
 module.exports = { "getLogger"  : getLogger

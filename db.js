@@ -14,12 +14,22 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
+require('defaultable')(module,
+  {}
+  , function(module, exports, DEFS, require) {
+
+
 var lib = require('./lib')
   , util = require('util')
   , assert = require('assert')
   , Emitter = require('./emitter').Emitter
   , DesignDocument = require('./ddoc').DesignDocument
   ;
+
+
+module.exports = { "Database": Database
+                 };
+
 
 function Database () {
   var self = this;
@@ -142,5 +152,4 @@ Database.prototype.start = function() {
   self.x_emit('start');
 }
 
-module.exports = { "Database": Database
-                 };
+}) // defaultable

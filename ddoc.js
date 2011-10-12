@@ -14,11 +14,21 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
+require('defaultable')(module,
+  {}
+  , function(module, exports, DEFS, require) {
+
+
 var lib = require('./lib')
   , util = require('util')
   , assert = require('assert')
   , Emitter = require('./emitter').Emitter
   ;
+
+
+module.exports = { "DesignDocument": DesignDocument
+                 };
+
 
 function DesignDocument () {
   var self = this;
@@ -75,5 +85,4 @@ DesignDocument.prototype.start = function() {
   self.x_emit('start');
 }
 
-module.exports = { "DesignDocument": DesignDocument
-                 };
+}) // defaultable

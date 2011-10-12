@@ -14,13 +14,19 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
+require('defaultable')(module,
+  { 'max_users': 1000
+  }, function(module, exports, DEFS, require) {
+
+
 var lib = require('./lib')
   , util = require('util')
   , Emitter = require('./emitter').Emitter
   , Database = require('./db').Database
   ;
 
-var MAX_USER_DEFAULT = 1000;
+module.exports = { "CouchDB": CouchDB
+                 };
 
 function CouchDB () {
   var self = this;
@@ -28,7 +34,7 @@ function CouchDB () {
 
   self.url = null;
   self.only_dbs = null;
-  self.max_users = MAX_USER_DEFAULT;
+  self.max_users = DEFS.max_users;
 
   self.on('start', function ping_root() {
     self.log.debug("Pinging: " + self.url);
@@ -220,5 +226,4 @@ CouchDB.prototype.anonymous_user = function() {
   return { name:null, roles: [] };
 }
 
-module.exports = { "CouchDB": CouchDB
-                 };
+}) // defaultable
