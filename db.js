@@ -131,7 +131,7 @@ function Database () {
 
   self.known('metadata', function(metadata) {
     self.known('security', function(security) {
-      self.known('end_ddocs', function(ddoc_ids) {
+      self.known('end_ddocs', function() {
         self.x_emit('end');
       })
     })
