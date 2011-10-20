@@ -29,6 +29,7 @@ module.exports = { "getLogger"  : getLogger
                  , "join"       : join_and_fix_slashes
                  , "encode_id"  : encode_doc_id
                  , "isRegExp"   : isRegExp
+                 , "compile"    : compile_expr
                  };
 
 
@@ -92,6 +93,12 @@ function isRegExp(obj) {
               obj.exec &&
               str.match(/^\/.*\/[gim]{0,3}$/)
             )
+}
+
+function compile_expr(source) {
+  var body = 'return (' + source + ')';
+  var builder = Function([], body);
+  return builder();
 }
 
 }) // defaultable
