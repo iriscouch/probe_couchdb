@@ -79,6 +79,14 @@ function DesignDocument () {
     self.known('language', function(language) {
       if(language != 'javascript')
         return self.log.debug('Skipping checks for unknown view language: ' + language);
+
+      if(view.map)
+        try       { lib.compile(view.map)                                    }
+        catch (e) { self.x_emit('code_error', e, view_name, 'map', view.map) }
+
+      if(view.reduce && view.reduce[0] != '_')
+        try       { lib.compile(view.reduce)                                       }
+        catch (e) { self.x_emit('code_error', e, view_name, 'reduce', view.reduce) }
     })
   })
 
