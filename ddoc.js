@@ -30,6 +30,7 @@ module.exports = { "DesignDocument": DesignDocument
                  };
 
 
+util.inherits(DesignDocument, Emitter);
 function DesignDocument () {
   var self = this;
   Emitter.call(self);
@@ -70,7 +71,6 @@ function DesignDocument () {
   })
 
 } // DesignDocument
-util.inherits(DesignDocument, Emitter);
 
 DesignDocument.prototype.start = function() {
   var self = this;
