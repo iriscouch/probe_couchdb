@@ -50,6 +50,12 @@ function line() {
   console.log(parts.join("\t"));
 }
 
+function errline() {
+  count += 1;
+  var parts = [count].concat(Array.prototype.slice.apply(arguments));
+  console.error(parts.join("\t"));
+}
+
 function handler_for(ev_name) {
   return function event_handler(obj) {
     line(ev_name, JSON.stringify(obj));
