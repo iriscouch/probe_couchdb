@@ -94,6 +94,14 @@ couch.on('db', function(db) {
     ddoc.on('body', function show_ddoc_body(body) {
       line(['body', path].join(' '), '(' + JSON.stringify(body).length + ' characters; ' + Object.keys(body).length + ' top-level keys)');
     })
+
+    ddoc.on('code_error', function(er, name, type, code) {
+      errline( 'bad code'
+             , ddoc.id + '/_view/' + name
+             , er.message || er.stack || er
+             , type + ': ', JSON.stringify(code)
+             )
+    })
   })
 })
 
