@@ -65,8 +65,28 @@ function DesignDocument () {
   })
 
   self.known('body', function(body) {
+    self.x_emit('language', body.language);
+
+    var views = body.views || {};
+    Object.keys(views).forEach(function(view_name) {
+      self.x_emit('view', view_name, views[view_name]);
+    })
+
+    self.x_emit('end_views');
+  })
+
+  self.on('view', function(view_name, view) {
+    self.known('language', function(language) {
+      if(language != 'javascript')
+        return self.log.debug('Skipping checks for unknown view language: ' + language);
+    })
+  })
+
+  self.known('body', function(body) {
     self.known('info', function(info) {
-      self.x_emit('end');
+      self.known('end_views', function(views) {
+        self.x_emit('end');
+      })
     })
   })
 
