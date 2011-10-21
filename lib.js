@@ -15,6 +15,8 @@
 //    limitations under the License.
 
 var log4js = require('log4js')
+  , assert = require('assert')
+  , uglify = require('uglify-js')
   , defaultable = require('defaultable')
   ;
 
@@ -29,7 +31,7 @@ module.exports = { "getLogger"  : getLogger
                  , "join"       : join_and_fix_slashes
                  , "encode_id"  : encode_doc_id
                  , "isRegExp"   : isRegExp
-                 , "compile"    : compile_expr
+                 , "check_expr" : check_expr
                  };
 
 
@@ -95,10 +97,33 @@ function isRegExp(obj) {
             )
 }
 
-function compile_expr(source) {
-  var body = 'return (' + source + ')';
-  var builder = Function([], body);
-  return builder();
+function check_expr(source_code, type) {
+  var ast = uglify.parser.parse('(' + source_code + ')');
+  assert.equal(ast[0], 'toplevel');
+
+  var statements = ast[1];
+  assert.equal(statements.length, 1);
+
+  var func_expr = statements[0];
+  assert.equal(func_expr.length, 2);
+  assert.equal(func_expr[0], 'stat');
+
+  var func_def = func_expr[1];
+  assert.equal(func_def[0], 'function');
+  // assert.equal(func_def[1], 'map');
+
+  var formals = func_def[2];
+  function assert_formals() {
+    var expected = Array.prototype.slice.apply(arguments);
+    if(JSON.stringify(formals) !== JSON.stringify(expected))
+      throw new Error('Nonstandard '+type+' function; expected function('+expected.join(', ')+'), got function('+formals.join(', ')+')');
+  }
+
+  if(type == 'map')
+    assert_formals('doc');
+
+  if(type == 'reduce')
+    assert_formals('keys', 'values', 'rereduce');
 }
 
 }) // defaultable

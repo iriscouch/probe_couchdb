@@ -96,7 +96,11 @@ couch.on('db', function(db) {
     })
 
     ddoc.on('code_error', function(er, name, type, code) {
-      errline( 'bad code'
+      var extra = '';
+      if(('line' in er) && ('col' in er))
+        extra = ' at line '+er.line+', column ' + er.col;
+
+      errline( 'bad code' + extra
              , ['', db.name, ddoc.id, '_view', name].join('/')
              , er.message || er.stack || er
              , type + ': ', JSON.stringify(code)

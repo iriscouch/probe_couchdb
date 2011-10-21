@@ -21,7 +21,6 @@ require('defaultable')(module,
 
 var lib = require('./lib')
   , util = require('util')
-  , assert = require('assert')
   , Emitter = require('./emitter').Emitter
   ;
 
@@ -81,11 +80,11 @@ function DesignDocument () {
         return self.log.debug('Skipping checks for unknown view language: ' + language);
 
       if(view.map)
-        try       { lib.compile(view.map)                                    }
+        try       { lib.check_expr(view.map, 'map')                          }
         catch (e) { self.x_emit('code_error', e, view_name, 'map', view.map) }
 
       if(view.reduce && view.reduce[0] != '_')
-        try       { lib.compile(view.reduce)                                       }
+        try       { lib.check_expr(view.reduce, 'reduce')                          }
         catch (e) { self.x_emit('code_error', e, view_name, 'reduce', view.reduce) }
     })
   })
