@@ -15,8 +15,8 @@
 //    limitations under the License.
 
 require('defaultable')(module,
-  {}
-  , function(module, exports, DEFS, require) {
+  { 'do_ddocs': true
+  }, function(module, exports, DEFS, require) {
 
 
 var lib = require('./lib')
@@ -40,6 +40,7 @@ function Database () {
   self.couch = null;
   self.name = null;
   self.url = null;
+  self.do_ddocs = DEFS.do_ddocs;
 
   self.on('start', function probe_metadata() {
     self.log.debug("Fetching db metadata: " + self.url);
@@ -73,6 +74,11 @@ function Database () {
   })
 
   self.on('start', function probe_ddocs() {
+    if(!self.do_ddocs) {
+      self.log.debug('Skipping ddoc probe');
+      return self.x_emit('end_ddocs');
+    }
+
     self.log.debug("Scanning for design documents: " + self.name);
     self.all_docs({startkey:'_design/', endkey:'_design0'}, function(er, view) {
       if(er)
