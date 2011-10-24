@@ -23,6 +23,7 @@ var lib = require('./lib')
   , util = require('util')
   , assert = require('assert')
   , Emitter = require('./emitter').Emitter
+  , querystring = require('querystring')
   , DesignDocument = require('./ddoc').DesignDocument
   ;
 
@@ -140,6 +141,40 @@ function Database () {
   })
 
 } // Database
+
+
+Database.prototype.all_docs = function(opts, callback) {
+  var self = this;
+  if(!callback && typeof opts == 'function') {
+    callback = opts;
+    opts = {};
+  }
+
+  opts = opts || {};
+  assert.equal(typeof opts, 'object', 'all_docs needs an options object parameter');
+  assert.equal(typeof callback, 'function', 'all_docs needs a callback function parameter');
+
+  opts.include_docs = !! opts.include_docs;
+  if(opts.startkey)
+    opts.startkey = JSON.stringify(opts.startkey);
+  if(opts.endkey)
+    opts.endkey = JSON.stringify(opts.endkey);
+
+  var view = lib.join(self.url, '/_all_docs?' + querystring.stringify(opts));
+
+  self.log.debug('Querying _all_docs: ' + self.name);
+  self.request({uri:view}, function(er, resp, body) {
+    if(er)
+      return callback(er);
+    else if(resp.statusCode === 401 && typeof body === 'object' && body.error === 'unauthorized')
+      return callback(null, null); // Indicate no read permission.
+    else if(resp.statusCode !== 200 || !('rows' in body))
+      return callback(new Error("Bad _all_docs response: "+view+": "+JSON.stringify({code:resp.statusCode, body:body})));
+
+    return callback(null, body);
+  })
+}
+
 
 Database.prototype.start = function() {
   var self = this;
