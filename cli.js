@@ -71,6 +71,10 @@ NORMAL_EVENTS.couch.forEach(function(ev_name) {
   couch.on(ev_name, handler_for(ev_name));
 })
 
+couch.on('error', function(er) {
+  console.error(er.message || er)
+})
+
 couch.on('end', function() {
   line('end', 'Probe complete');
 })
