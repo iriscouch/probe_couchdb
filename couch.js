@@ -129,11 +129,18 @@ function CouchDB (url) {
         return self.x_emit('error', er);
       if(resp.statusCode !== 200 || (!session) || session.ok !== true)
         return self.x_emit('error', new Error("Bad _session from " + session_url + ": " + JSON.stringify(session)));
-
       self.log.debug("Received session: " + JSON.stringify(session));
-      if( ((session.userCtx || {}).roles || []).indexOf('_admin') === -1 )
+
+      // Normalize the user_ctx for the user's convenience.
+      var normal_session           = JSON.parse(JSON.stringify(session));
+      normal_session.userCtx       = normal_session.userCtx || {};
+      normal_session.userCtx.name  = normal_session.userCtx.name || null;
+      normal_session.userCtx.roles = normal_session.userCtx.roles || [];
+
+      if(!~ normal_session.userCtx.roles.indexOf('_admin'))
         self.log.debug("Results will be incomplete without _admin access");
-      self.x_emit('session', session);
+
+      self.x_emit('session', normal_session, session);
     })
   })
 
