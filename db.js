@@ -31,6 +31,7 @@ module.exports = { "Database": Database
                  };
 
 
+util.inherits(Database, Emitter);
 function Database () {
   var self = this;
   Emitter.call(self);
@@ -139,7 +140,6 @@ function Database () {
   })
 
 } // Database
-util.inherits(Database, Emitter);
 
 Database.prototype.start = function() {
   var self = this;
