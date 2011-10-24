@@ -25,9 +25,12 @@ var lib = require('./lib')
   , Database = require('./db').Database
   ;
 
+
 module.exports = { "CouchDB": CouchDB
                  };
 
+
+util.inherits(CouchDB, Emitter);
 function CouchDB () {
   var self = this;
   Emitter.call(self);
@@ -210,7 +213,6 @@ function CouchDB () {
 
 } // CouchDB
 
-util.inherits(CouchDB, Emitter);
 
 CouchDB.prototype.start = function() {
   var self = this;
@@ -221,9 +223,11 @@ CouchDB.prototype.start = function() {
   self.x_emit('start');
 }
 
+
 CouchDB.prototype.anonymous_user = function() {
   var self = this;
   return { name:null, roles: [] };
 }
+
 
 }) // defaultable
