@@ -76,6 +76,9 @@ function DesignDocument () {
 
   self.on('view', function(view_name, view) {
     self.known('language', function(language) {
+      if(typeof language == 'undefined')
+        language = 'javascript';
+
       if(language != 'javascript')
         return self.log.debug('Skipping checks for unknown view language: ' + language);
 
