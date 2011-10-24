@@ -16,6 +16,7 @@
 
 require('defaultable')(module,
   { 'max_users': 1000
+  , 'url'      : null
   }, function(module, exports, DEFS, require) {
 
 
@@ -31,11 +32,11 @@ module.exports = { "CouchDB": CouchDB
 
 
 util.inherits(CouchDB, Emitter);
-function CouchDB () {
+function CouchDB (url) {
   var self = this;
   Emitter.call(self);
 
-  self.url = null;
+  self.url = url || DEFS.url || null;
   self.only_dbs = null;
   self.max_users = DEFS.max_users;
 
