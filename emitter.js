@@ -48,16 +48,6 @@ util.inherits(Emitter, events.EventEmitter);
 Emitter.prototype.request = function request_wrapper(opts, callback) {
   var self = this;
 
-  function json_body(er, resp, body) {
-    if(!er) {
-      try      { body = JSON.parse(body) }
-      catch(e) { er = e }
-    }
-
-    // TODO: Maybe set self.client = resp.client?
-    return callback && callback.apply(this, [er, resp, body]);
-  }
-
   opts.proxy  = opts.proxy  || self.proxy || DEFS.http_proxy;
   opts.client = opts.client || self.client;
   opts.followRedirect = false;
@@ -70,6 +60,16 @@ Emitter.prototype.request = function request_wrapper(opts, callback) {
     opts.headers['content-type'] = 'application/json';
 
   return request.apply(self, [opts, json_body]);
+
+  function json_body(er, resp, body) {
+    if(!er) {
+      try      { body = JSON.parse(body) }
+      catch(e) { er = e }
+    }
+
+    // TODO: Maybe set self.client = resp.client?
+    return callback && callback.apply(this, [er, resp, body]);
+  }
 }
 
 Emitter.prototype.known = function on_known(name, cb, newval) {
