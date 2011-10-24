@@ -131,7 +131,7 @@ function CouchDB () {
 
       self.log.debug("Received session: " + JSON.stringify(session));
       if( ((session.userCtx || {}).roles || []).indexOf('_admin') === -1 )
-        self.log.warn("Results will be incomplete without _admin access");
+        self.log.debug("Results will be incomplete without _admin access");
       self.x_emit('session', session);
     })
   })
@@ -155,7 +155,7 @@ function CouchDB () {
     var auth_db = config && config.couch_httpd_auth && config.couch_httpd_auth.authentication_db;
     if(!auth_db) {
       auth_db = '_users';
-      self.log.warn('authentication_db not found in config; trying ' + JSON.stringify(auth_db));
+      self.log.debug('authentication_db not found in config; trying ' + JSON.stringify(auth_db));
     }
 
     // Of course, the anonymous user is always known to exist.
@@ -167,7 +167,7 @@ function CouchDB () {
       if(er)
         return self.x_emit('error', er);
       if(resp.statusCode !== 200 || typeof config !== 'object') {
-        self.log.warn("Can not access authentication_db: " + auth_db_url);
+        self.log.debug("Can not access authentication_db: " + auth_db_url);
         // Signal the end of the users discovery.
         self.x_emit('users', anonymous_users);
       } else if(body.doc_count > self.max_users) {
