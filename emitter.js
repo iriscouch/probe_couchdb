@@ -48,6 +48,9 @@ util.inherits(Emitter, events.EventEmitter);
 Emitter.prototype.request = function request_wrapper(opts, callback) {
   var self = this;
 
+  if(typeof opts == 'string')
+    opts = {uri:opts};
+
   opts.proxy  = opts.proxy  || self.proxy || DEFS.http_proxy;
   opts.client = opts.client || self.client;
   opts.followRedirect = false;
