@@ -73,24 +73,18 @@ function Database () {
   })
 
   self.on('start', function probe_ddocs() {
-    var view = lib.join(self.url, '/_all_docs'
-                                + '?include_docs=false'
-                                + '&startkey=' + encodeURIComponent(JSON.stringify("_design/"))
-                                + '&endkey='   + encodeURIComponent(JSON.stringify("_design0"))
-                                                             );
     self.log.debug("Scanning for design documents: " + self.name);
-    self.request({uri:view}, function(er, resp, body) {
+    self.all_docs({startkey:'_design/', endkey:'_design0'}, function(er, view) {
       if(er)
         return self.x_emit('error', er);
-      else if(resp.statusCode === 401 && typeof body === 'object' && body.error === 'unauthorized') {
-        // Indicate no read permission.
-        self.x_emit('ddoc_ids', null);
-      } else if(resp.statusCode === 200 && ("rows" in body)) {
-        var ids = body.rows.map(function(row) { return row.id });
-        self.log.debug(self.name + ' has ' + ids.length + ' design documents: ' + ids.join(', '));
-        self.x_emit('ddoc_ids', ids);
-      } else
-        return self.x_emit('error', new Error("Bad ddoc response from " + view + ": " + JSON.stringify({code:resp.statusCode, body:body})));
+
+      var ids = view && view.rows.map(function(row) { return row.id });
+      if(!ids)
+        self.log.debug(self.name+' has unknown design documents: no read permission');
+      else
+        self.log.debug(self.name+' has '+ids.length+' design documents: ' + ids.join(', '));
+
+      self.x_emit('ddoc_ids', ids);
     })
   })
 
