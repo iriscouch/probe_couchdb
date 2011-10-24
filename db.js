@@ -154,9 +154,10 @@ Database.prototype.all_docs = function(opts, callback) {
   if(opts.endkey)
     opts.endkey = JSON.stringify(opts.endkey);
 
-  var view = lib.join(self.url, '/_all_docs?' + querystring.stringify(opts));
+  var qs = querystring.stringify(opts);
+  var view = lib.join(self.url, '/_all_docs?' + qs);
 
-  self.log.debug('Querying _all_docs: ' + self.name);
+  self.log.debug('Querying _all_docs: ' + self.name + ' ' + JSON.stringify(opts));
   self.request({uri:view}, function(er, resp, body) {
     if(er)
       return callback(er);
