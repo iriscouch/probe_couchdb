@@ -269,6 +269,7 @@ function CouchDB (url) {
       }
 
       var supported = { javascript  : "function() { return (typeof log).replace(/^func/, 'ac') }"
+                      , coffeescript: "() -> (typeof log).replace /^func/, 'ac'"
                       }
 
       languages.forEach(function(language) {
