@@ -231,18 +231,18 @@ function CouchDB (url) {
   self.known('session', function(session) {
     if(!DEFS.do_pingquery) {
       self.log.debug('Skipping QS ping: disabled by config');
-      return self.x_emit('end_queries');
+      return self.x_emit('end_pings');
     }
 
     if(!~ session.userCtx.roles.indexOf('_admin')) {
       self.log.debug('Skipping QS ping: not an _admin session');
-      return self.x_emit('end_queries');
+      return self.x_emit('end_pings');
     }
 
     self.known('config', function(config) {
       if(!config || !config.httpd_global_handlers || !config.query_servers) {
         self.log.debug('Skipping QS ping: bad config');
-        return self.x_emit('end_queries');
+        return self.x_emit('end_pings');
       }
 
       var ping_path = null;
@@ -254,7 +254,7 @@ function CouchDB (url) {
 
       if(!ping_path) {
         return self.log.debug('Skipping QS ping: no pingquery plugin');
-        return self.x_emit('end_queries');
+        return self.x_emit('end_pings');
       }
 
       var languages = Object.keys(config.query_servers);
