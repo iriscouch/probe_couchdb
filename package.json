@@ -1,5 +1,5 @@
 { "name": "probe_couchdb"
-, "version": "0.5.0"
+, "version": "0.5.1"
 , "author": { "name": "Iris Couch"
             , "email": "us@iriscouch.com"
             }
