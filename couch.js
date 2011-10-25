@@ -189,29 +189,30 @@ function CouchDB (url) {
       } else if(body.doc_count > self.max_users) {
         return self.x_emit('error', new Error("Too many users; you must add a view to process them"));
         // TODO
-      } else {
-        var users_query = lib.join(auth_db_url, '/_all_docs'
-                                              + '?include_docs=true'
-                                              + '&startkey=' + encodeURIComponent(JSON.stringify("org.couchdb.user:"))
-
-                                              // CouchDB 1.1.0 has a bug preventing a "raw" scan from ':' to ';', so just
-                                              // assume that the only documents are well-formed and filter on the client side.
-                                              //+ '&endkey='   + encodeURIComponent(JSON.stringify("org.couchdb.user;"))
-                                              );
-        self.log.debug("Fetching all users: " + users_query);
-        self.request({uri:users_query}, function(er, resp, body) {
-          if(er)
-            return self.x_emit('error', er);
-          if(resp.statusCode !== 200 || !Array.isArray(body.rows))
-            return self.x_emit('error', new Error("Failed to fetch user listing from " + users_query + ": " + JSON.stringify(body)));
-
-          var users = body.rows
-                      .filter(function(row) { return /^org\.couchdb\.user:/.test(row.id) })
-                      .map(function(row) { return row.doc });
-          self.log.debug("Found " + (users.length+1) + " users (including anonymous): " + auth_db_url);
-          self.x_emit('users', anonymous_users.concat(users));
-        })
       }
+
+      // Looks good. Get all the users.
+      var users_query = lib.join(auth_db_url, '/_all_docs'
+                                            + '?include_docs=true'
+                                            + '&startkey=' + encodeURIComponent(JSON.stringify("org.couchdb.user:"))
+
+                                            // CouchDB 1.1.0 has a bug preventing a "raw" scan from ':' to ';', so just
+                                            // assume that the only documents are well-formed and filter on the client side.
+                                            //+ '&endkey='   + encodeURIComponent(JSON.stringify("org.couchdb.user;"))
+                                            );
+      self.log.debug("Fetching all users: " + users_query);
+      self.request({uri:users_query}, function(er, resp, body) {
+        if(er)
+          return self.x_emit('error', er);
+        if(resp.statusCode !== 200 || !Array.isArray(body.rows))
+          return self.x_emit('error', new Error("Failed to fetch user listing from " + users_query + ": " + JSON.stringify(body)));
+
+        var users = body.rows
+                    .filter(function(row) { return /^org\.couchdb\.user:/.test(row.id) })
+                    .map(function(row) { return row.doc });
+        self.log.debug("Found " + (users.length+1) + " users (including anonymous): " + auth_db_url);
+        self.x_emit('users', anonymous_users.concat(users));
+      })
     })
   })
 
