@@ -80,7 +80,7 @@ couch.on('end', function() {
 })
 
 couch.on('users', function show_users(users) {
-  line('users', '(' + users.length + ' users, including the anonymous user)');
+  line('users', '(' + Object.keys(users).length + ' users, including the anonymous user)');
 })
 
 couch.on('db', function(db) {

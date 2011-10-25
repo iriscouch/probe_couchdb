@@ -174,8 +174,11 @@ function CouchDB (url) {
       self.log.debug('authentication_db not found in config; trying ' + JSON.stringify(auth_db));
     }
 
+    var all_users = {};
+    function got_user(user) { all_users[user._id] = user }
+
     // Of course, the anonymous user is always known to exist.
-    var anonymous_users = [ self.anonymous_user() ];
+    all_users[null] = self.anonymous_user();
 
     var auth_db_url = lib.join(self.url, encodeURIComponent(auth_db).replace(/^_design%2[fF]/, '_design/'));
     self.log.debug("Checking auth_db: " + auth_db_url);
@@ -184,8 +187,7 @@ function CouchDB (url) {
         return self.x_emit('error', er);
       if(resp.statusCode !== 200 || typeof config !== 'object') {
         self.log.debug("Can not access authentication_db: " + auth_db_url);
-        // Signal the end of the users discovery.
-        self.x_emit('users', anonymous_users);
+        self.x_emit('users', all_users);
       } else if(body.doc_count > self.max_users) {
         return self.x_emit('error', new Error("Too many users; you must add a view to process them"));
         // TODO
@@ -200,6 +202,7 @@ function CouchDB (url) {
                                             // assume that the only documents are well-formed and filter on the client side.
                                             //+ '&endkey='   + encodeURIComponent(JSON.stringify("org.couchdb.user;"))
                                             );
+
       self.log.debug("Fetching all users: " + users_query);
       self.request({uri:users_query}, function(er, resp, body) {
         if(er)
@@ -207,11 +210,13 @@ function CouchDB (url) {
         if(resp.statusCode !== 200 || !Array.isArray(body.rows))
           return self.x_emit('error', new Error("Failed to fetch user listing from " + users_query + ": " + JSON.stringify(body)));
 
-        var users = body.rows
-                    .filter(function(row) { return /^org\.couchdb\.user:/.test(row.id) })
-                    .map(function(row) { return row.doc });
-        self.log.debug("Found " + (users.length+1) + " users (including anonymous): " + auth_db_url);
-        self.x_emit('users', anonymous_users.concat(users));
+        body.rows.forEach(function(row) {
+          if(!! row.id.match(/^org\.couchdb\.user:/))
+            got_user(row.doc);
+        })
+
+        self.log.debug("Found " + Object.keys(all_users).length + " users (including anonymous): " + auth_db_url);
+        self.x_emit('users', all_users);
       })
     })
   })

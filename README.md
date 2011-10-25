@@ -71,7 +71,7 @@ You create these using the API.
 * **couchdb** | The server "Welcome" message (`/` response)
 * **session** | The session with this server (`/_session` response). Check `.userCtx` to see your login and roles.
 * **config** | The server configuration (`/_config` response). If you are not the admin, this will be `null`.
-* **users** | A list of all user documents (usually in the `_users` database). This will *always* include an anonymous user document: `{"name":null, "roles":[]}`
+* **users** | Object with all user documents (from the `_users` database). Keys are the document IDs, values are the documents. Always includes a `null` key with the anonymous user.
 * **db** | A *Database* probe. If you care about that database, subscribe to its events!
 
 These events are used internally and less useful:
