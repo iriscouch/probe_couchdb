@@ -17,6 +17,8 @@
 require('defaultable')(module,
   { 'max_users': 1000
   , 'url'      : null
+  , 'do_dbs'   : true
+  , 'only_dbs' : null
   }, function(module, exports, DEFS, require) {
 
 
@@ -37,7 +39,8 @@ function CouchDB (url) {
   Emitter.call(self);
 
   self.url = url || DEFS.url || null;
-  self.only_dbs = null;
+  self.do_dbs   = DEFS.do_dbs;
+  self.only_dbs = DEFS.only_dbs || null;
   self.max_users = DEFS.max_users;
 
   self.on('start', function ping_root() {
@@ -53,6 +56,11 @@ function CouchDB (url) {
   })
 
   self.on('couchdb', function probe_databases(hello) {
+    if(!self.do_dbs) {
+      self.log.debug('Skipping db probe');
+      return self.x_emit('end_dbs');
+    }
+
     var all_dbs = lib.join(self.url, '/_all_dbs');
     self.log.debug("Scanning databases: " + all_dbs);
     self.request({uri:all_dbs}, function(er, resp, body) {
