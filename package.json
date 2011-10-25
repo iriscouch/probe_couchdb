@@ -6,7 +6,7 @@
 , "maintainers": { "name": "Jason Smith"
                  , "email": "jhs@iriscouch.com"
                  }
-, "description": "Automated probing all information from CouchDB"
+, "description": "Spider a CouchDB server, emit events with discovered information"
 , "tags": ["probe", "couchdb", "security", "automation"]
 , "homepage": "http://github.com/jhs/probe_couchdb"
 , "repository": { "type": "git"
