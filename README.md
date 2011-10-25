@@ -101,12 +101,14 @@ You create these using the API.
 * **session** | The session with this server (`/_session` response). Check `.userCtx` to see your login and roles.
 * **config** | The server configuration (`/_config` response). If you are not the admin, this will be `null`.
 * **users** | Object with all user documents (from the `_users` database). Keys are the document IDs, values are the documents. Always includes a `null` key with the anonymous user.
+* **pingquery** | The result of [pinging the CouchDB query server][pingquery], if the plugin is installed. *2 callback arguments*: the language, e.g. `"coffeescript"`; and ping result, e.g. `{"ok":true}` or `{"error":"bad_ping", "reason":"no_match"}`.
 * **db** | A *Database* probe. If you care about that database, subscribe to its events!
 
 These events are used internally and less useful:
 
 * **dbs** | An array of databases on this server
 * **end_dbs** | Indicates that all databases have been processed
+* **end_pings** | Indicates that pinging all query servers is done
 
 ### Properties
 
@@ -172,3 +174,4 @@ These events are used internally and less useful:
 No methods.
 
 [req]: https://github.com/mikeal/request
+[pingquery]: https://github.com/iriscouch/pingquery_couchdb
