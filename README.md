@@ -49,8 +49,8 @@ This is the object hierarchy: **CouchDB** &rarr; **Database** &rarr; **Design do
 
 All events pass one parameter to your callback unless otherwise noted.
 
-* **start** | The probe is beginning its work; *zero callback arguments*
-* **end** | The probe has finished its work; *zero callback arguments*
+* **start** | The probe is beginning its work; *0 callback arguments*
+* **end** | The probe has finished its work; *0 callback arguments*
 * **error** | An Error object indicating a problem. Databases re-emit all design document errors, and CouchDBs re-emit all database errors.
 
 ### Common properties
@@ -153,8 +153,8 @@ Database probes pass design document probes to your callback on the *ddoc* event
 * **body** | The design document, as a Javascript object
 * **info** | The design document metadata info (`/db/_design/ddoc/_info` response)
 * **language** | A string representing the language this design document uses. This is whatever the `.language` field in the document is. Usually this is `"javascript"`, or else `undefined` if it was not specified
-* **view** | *Two callback arguments:* the view name (e.g. `"by_name"`), and then the view object (e.g. `{"map":"function(doc) { ... }"}`
-* **code_error** | Indicates that a Javascript view has a error in its source code (either syntax, or nonstandard function signature); *four callback arguments:*
+* **view** | *2 callback arguments:* the view name (e.g. `"by_name"`), and then the view object (e.g. `{"map":"function(doc) { ... }"}`
+* **code_error** | Indicates that a Javascript view has a error in its source code (either syntax, or nonstandard function signature); *4 callback arguments:*
   1. The error object
   1. The name of the view in question, e.g. `"by_name"`
   1. The name of the function in question, e.g. `"map"` or `"reduce"`
