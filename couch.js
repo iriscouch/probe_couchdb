@@ -19,6 +19,7 @@ require('defaultable')(module,
   , 'url'      : null
   , 'do_dbs'   : true
   , 'do_users' : true
+  , 'do_pingquery': true
   , 'only_dbs' : null
   }, function(module, exports, DEFS, require) {
 
@@ -227,12 +228,80 @@ function CouchDB (url) {
     })
   })
 
+  self.known('session', function(session) {
+    if(!DEFS.do_pingquery) {
+      self.log.debug('Skipping QS ping: disabled by config');
+      return self.x_emit('end_queries');
+    }
+
+    if(!~ session.userCtx.roles.indexOf('_admin')) {
+      self.log.debug('Skipping QS ping: not an _admin session');
+      return self.x_emit('end_queries');
+    }
+
+    self.known('config', function(config) {
+      if(!config || !config.httpd_global_handlers || !config.query_servers) {
+        self.log.debug('Skipping QS ping: bad config');
+        return self.x_emit('end_queries');
+      }
+
+      var ping_path = null;
+      Object.keys(config.httpd_global_handlers).forEach(function(path) {
+        var has_plugin_re = /^\s*{\s*pingquery_couchdb\s*,\s*handle_pingquery_req\s*}\s*$/;
+        if(config.httpd_global_handlers[path].match(has_plugin_re))
+          ping_path = path;
+      })
+
+      if(!ping_path) {
+        return self.log.debug('Skipping QS ping: no pingquery plugin');
+        return self.x_emit('end_queries');
+      }
+
+      var languages = Object.keys(config.query_servers);
+      var langs_todo = languages.length;
+      function did(er, language) {
+        langs_todo -= 1;
+        if(langs_todo == 0)
+          self.x_emit('end_pings');
+
+        if(er)
+          self.x_emit('error', er);
+      }
+
+      languages.forEach(function(language) {
+        var ping = { "out": "action" };
+
+        if(language == 'javascript')
+          ping.in = "function() { return (typeof log).replace(/^func/, 'ac') }";
+        else {
+          self.log.debug('Skipping ping unsupported QS language: ' + language);
+          return did(null, language);
+        }
+
+        var req = { method:'POST'
+                  , 'uri':lib.join(self.url, ping_path, language)
+                  , 'body':JSON.stringify(ping)
+                  }
+
+        self.log.debug('Pinging QS language: '+language);
+        self.request(req, function(er, resp, body) {
+          if(!er)
+            self.x_emit('pingquery', language, body);
+
+          did(er, language);
+        })
+      })
+    })
+  })
+
   self.known('couchdb', function(welcome) {
     self.known('users', function(users) {
       self.known('session', function(session) {
         self.known('config', function(config) {
           self.known('end_dbs', function() {
-            self.x_emit('end');
+            self.known('end_pings', function() {
+              self.x_emit('end');
+            })
           })
         })
       })
