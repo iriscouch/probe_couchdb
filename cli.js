@@ -36,6 +36,7 @@ if(!/^https?:\/\//.test(couch_url))
   couch_url = 'http://' + couch_url;
 
 var defs = { 'log_level': process.env.log || 'info'
+           , 'do_users' : process.env.do_users != 'false'
            , 'do_dbs'   : process.env.do_dbs != 'false'
            , 'label'    : process.env.label || 'probe'
            };
