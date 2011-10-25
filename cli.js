@@ -85,6 +85,11 @@ couch.on('users', function show_users(users) {
   line('users', '(' + Object.keys(users).length + ' users, including the anonymous user)');
 })
 
+couch.on('pingquery', function(language, result) {
+  var write = result.ok ? line : errline;
+  write('QS ping', language, JSON.stringify(result));
+})
+
 couch.on('db', function(db) {
   NORMAL_EVENTS.db.forEach(function(ev_name) {
     db.on(ev_name, handler_for([ev_name, db.name].join(' ')));
