@@ -35,11 +35,12 @@ if(!couch_url) {
 if(!/^https?:\/\//.test(couch_url))
   couch_url = 'http://' + couch_url;
 
-var defs = { 'log_level': process.env.log || 'info' };
-if(process.env.label)
-  defs.log_label = process.env.label;
+var defs = { 'log_level': process.env.log || 'info'
+           , 'do_dbs'   : process.env.do_dbs != 'false'
+           , 'label'    : process.env.label || 'probe'
+           };
 
-var probe_couchdb = require('./api').defaults(defs);
+probe_couchdb = probe_couchdb.defaults(defs);
 var couch = new probe_couchdb.CouchDB();
 couch.url = couch_url;
 
