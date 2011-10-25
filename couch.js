@@ -268,12 +268,13 @@ function CouchDB (url) {
           self.x_emit('error', er);
       }
 
-      languages.forEach(function(language) {
-        var ping = { "out": "action" };
+      var supported = { javascript  : "function() { return (typeof log).replace(/^func/, 'ac') }"
+                      }
 
-        if(language == 'javascript')
-          ping.in = "function() { return (typeof log).replace(/^func/, 'ac') }";
-        else {
+      languages.forEach(function(language) {
+        var ping = { 'in':supported[language], 'out':"action" };
+
+        if(!ping.in) {
           self.log.debug('Skipping ping unsupported QS language: ' + language);
           return did(null, language);
         }
