@@ -189,8 +189,8 @@ function CouchDB (url) {
         self.log.debug("Can not access authentication_db: " + auth_db_url);
         self.x_emit('users', all_users);
       } else if(body.doc_count > self.max_users) {
-        return self.x_emit('error', new Error("Too many users; you must add a view to process them"));
         // TODO
+        return self.x_emit('error', new Error("Too many users; you must add a view to process them"));
       }
 
       // Looks good. Get all the users.
