@@ -60,7 +60,36 @@ All events pass one parameter to your callback unless otherwise noted.
 
 ### Common methods
 
-**request(options, callback)** | A [request][req] wrapper. Headers for JSON are set, and the response body is JSON-parsed automatically.
+* **request(options, callback)** | A [request][req] wrapper. Headers for JSON are set, and the response body is JSON-parsed automatically.
+* **known(event, callback)** | Registers a callback guaranteed to run, even if the event already happened.
+
+### Use known() for multiple events
+
+Often you want to know multiple things about the server. But normal EventEmitter `.on()` calls will not work. For example, to determine your own user document:
+
+```javascript
+// XXX: Bad code! What if the session event fires before the users event?
+couch.on('users', function(users) {
+  couch.on('session', function(session) {
+    var my_id = 'org.couchdb.user:' + session.userCtx.name;
+    var my_doc = users[my_id];
+    console.log("My user doc: " + JSON.stringify(my_doc));
+  })
+})
+```
+
+If the event has not yet fired, `.known()` works just like `.on()`. But if the event has fired already, `.known()` will immediately run your callback with the event data. In other words, using `.known()` you don't have to worry about event order.
+
+```javascript
+// Good code.
+couch.known('users', function(users) {
+  couch.known('session', function(session) {
+    var my_id = 'org.couchdb.user:' + session.userCtx.name;
+    var my_doc = users[my_id];
+    console.log("My user doc: " + JSON.stringify(my_doc));
+  })
+})
+```
 
 ## CouchDB Probes
 
