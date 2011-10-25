@@ -18,6 +18,7 @@ require('defaultable')(module,
   { 'max_users': 1000
   , 'url'      : null
   , 'do_dbs'   : true
+  , 'do_users' : true
   , 'only_dbs' : null
   }, function(module, exports, DEFS, require) {
 
@@ -166,19 +167,24 @@ function CouchDB (url) {
     })
   })
 
+  // Probe the user accounts.
   self.on('config', function(config) {
+    var all_users = {};
+
+    // Of course, the anonymous user is always known to exist.
+    all_users[null] = self.anonymous_user();
+
+    if(!DEFS.do_users) {
+      self.log.debug('Skipping user probe: disabled by config');
+      return self.x_emit('users', all_users);
+    }
+
     // Once the config is known, the list of users can be established.
     var auth_db = config && config.couch_httpd_auth && config.couch_httpd_auth.authentication_db;
     if(!auth_db) {
       auth_db = '_users';
       self.log.debug('authentication_db not found in config; trying ' + JSON.stringify(auth_db));
     }
-
-    var all_users = {};
-    function got_user(user) { all_users[user._id] = user }
-
-    // Of course, the anonymous user is always known to exist.
-    all_users[null] = self.anonymous_user();
 
     var auth_db_url = lib.join(self.url, encodeURIComponent(auth_db).replace(/^_design%2[fF]/, '_design/'));
     self.log.debug("Checking auth_db: " + auth_db_url);
@@ -212,7 +218,7 @@ function CouchDB (url) {
 
         body.rows.forEach(function(row) {
           if(!! row.id.match(/^org\.couchdb\.user:/))
-            got_user(row.doc);
+            all_users[row.id] = row.doc;
         })
 
         self.log.debug("Found " + Object.keys(all_users).length + " users (including anonymous): " + auth_db_url);
