@@ -38,6 +38,7 @@ if(!/^https?:\/\//.test(couch_url))
 var defs = { 'log_level': process.env.log || 'info'
            , 'do_users' : process.env.do_users != 'false'
            , 'do_dbs'   : process.env.do_dbs != 'false'
+           , 'max_users': +(process.env.max_users || 1000)
            , 'label'    : process.env.label || 'probe'
            };
 
