@@ -197,7 +197,7 @@ function CouchDB (url) {
         self.x_emit('users', all_users);
       } else if(body.doc_count > self.max_users) {
         // TODO
-        return self.x_emit('error', new Error("Too many users; you must add a view to process them"));
+        return self.x_emit('error', new Error('User count maximum ('+self.max_users+') is insufficent for this server: '+body.doc_count+' users'));
       }
 
       // Looks good. Get all the users.
