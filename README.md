@@ -14,7 +14,7 @@ Yes.
 
 ## Usage
 
-Probe CouchDB is an event-emitter. Give it a URL and tell it to start.
+Probe CouchDB is an event emitter. Give it a URL and tell it to start.
 
 ```javascript
 var probe_couchdb = require("probe_couchdb");
@@ -34,6 +34,22 @@ couch.on('db', function(db) {
     console.log(db.name + ' has ' + data.doc_count + ' docs, using ' + (data.disk_size/1024) + 'KB on disk');
   })
 })
+```
+
+## Options and Defaults
+
+Probe CouchDB is [defaultable][defaultable]. Customize its major behaviors by setting its default options:
+
+```javascript
+// Stock behavior
+var probe_couchdb = require("probe_couchdb");
+
+// Modified behavior
+var probe_verbose = probe_couchdb.defaults({log_level: "debug"});
+var skips_users   = probe_couchdb.defaults({do_users : false  });
+
+// Combined, inherited behavior.
+var verbose_nodb = probe_verbose.defaults({do_dbs: false});
 ```
 
 <a name="api"></a>
@@ -145,7 +161,7 @@ These events are used internally and less useful:
 
 No methods.
 
-## Known: Avoid event order issues
+## Correct event order
 
 Often you want to know multiple things about the server. But normal EventEmitter `.on()` calls will not work. For example, to determine your own user document:
 
@@ -175,3 +191,4 @@ couch.known('users', function(users) {
 
 [req]: https://github.com/mikeal/request
 [pingquery]: https://github.com/iriscouch/pingquery_couchdb
+[defautable]: https://github.com/iriscouch/defaultable
