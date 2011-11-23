@@ -201,4 +201,4 @@ couch.known('users', function(users) {
 
 [req]: https://github.com/mikeal/request
 [pingquery]: https://github.com/iriscouch/pingquery_couchdb
-[defautable]: https://github.com/iriscouch/defaultable
+[defaultable]: https://github.com/iriscouch/defaultable
