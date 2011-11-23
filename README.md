@@ -1,4 +1,4 @@
-# Automatic, comprehensive, event-driven CouchDB exploration
+# Comprehensive event-driven CouchDB exploration
 
 Probe CouchDB is a Javascript library which digs into every corner of a CouchDB server and fire events when it find interesting things: users, configs, databases, design documents, etc.
 
