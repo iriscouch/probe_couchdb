@@ -45,11 +45,21 @@ Probe CouchDB is [defaultable][defaultable]. Customize its major behaviors by se
 var probe_couchdb = require("probe_couchdb");
 
 // Modified behavior
-var probe_verbose = probe_couchdb.defaults({log_level: "debug"});
-var skips_users   = probe_couchdb.defaults({do_users : false  });
+var proxied_probe = probe_couchdb.defaults({ http_proxy: "http://localhost:8080/" })
+  , probe_verbose = probe_couchdb.defaults({ log_level: "debug" })
+  , skips_users   = probe_couchdb.defaults({ do_users : false   })
+  , skips_designs = probe_couchdb.defaults({ do_ddocs : false   })
+  , skips_dbs     = probe_couchdb.defaults({ do_dbs   : false   });
 
-// Combined, inherited behavior.
-var verbose_nodb = probe_verbose.defaults({do_dbs: false});
+// Combined behavior
+var my_probe = probe_couchdb.defaults({ http_proxy: "http://localhost:8080"
+                                      , log_level : "debug"
+                                      , url       : "http://admin:secret@localhost:5984"
+                                      })
+
+// Inherited behavior
+var three_dbs = my_probe.defaults({ only_dbs:["foo", "bar", "baz"] })
+  , B_dbs     = my_probe.defaults({ only_dbs: /^b/                 });
 ```
 
 <a name="api"></a>
