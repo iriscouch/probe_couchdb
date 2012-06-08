@@ -89,13 +89,13 @@ Emitter.prototype.known = function on_known(name, cb, newval) {
     if(! state.known)
       state.callbacks.push(cb)
     else
-      return cb && cb.apply(undefined, [state.value]);
+      return cb && cb.apply(self, [state.value]);
   } else {
     // Store the value, calling back any pending callbacks.
     state.known = true;
     state.value = newval;
     state.callbacks.forEach(function(cb) {
-      cb && cb.apply(undefined, [newval]);
+      cb && cb.apply(self, [newval]);
     })
     state.callbacks = [];
   }
