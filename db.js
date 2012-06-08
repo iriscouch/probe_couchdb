@@ -180,12 +180,12 @@ Database.prototype.all_docs = function(opts, callback) {
 Database.prototype.start = function() {
   var self = this;
 
-  if(!self.couch)
+  if(!self.couch || !self.couch.url)
     throw new Error("Couch URL required");
   if(!self.name)
     throw new Error("Database name required");
 
-  self.url = lib.join(self.couch, encodeURIComponent(self.name));
+  self.url = lib.join(self.couch.url, encodeURIComponent(self.name));
   self.x_emit('start');
 }
 

@@ -101,7 +101,7 @@ function CouchDB (url) {
 
     dbs.forEach(function(db_name) {
       var db = new Database;
-      db.couch = self.url;
+      db.couch = self
       db.name = db_name;
       db.log.setLevel(self.log.level.levelStr);
 
