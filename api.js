@@ -15,7 +15,8 @@
 //    limitations under the License.
 
 require('defaultable').def(module,
-  {}
+  { 'strict_ssl': true
+  }
   , function(module, exports, DEFS, require) {
 
 module.exports = { "CouchDB"       : require('./couch').CouchDB

@@ -55,6 +55,8 @@ Emitter.prototype.request = function request_wrapper(opts, callback) {
   opts.client = opts.client || self.client;
   opts.followRedirect = false;
 
+  opts.rejectUnauthorized = DEFS.strict_ssl
+
   opts.headers = opts.headers || {};
   opts.headers.accept = opts.headers.accept || 'application/json';
   //opts.headers.Connection = opts.headers.Connection || 'keep-alive';
