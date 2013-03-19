@@ -40,6 +40,7 @@ var defs = { 'log_level': process.env.log || 'info'
            , 'do_dbs'   : process.env.do_dbs != 'false'
            , 'max_users': +(process.env.max_users || 1000)
            , 'label'    : process.env.label || 'probe'
+           , 'strict_ssl': false
            };
 
 probe_couchdb = probe_couchdb.defaults(defs);
