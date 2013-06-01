@@ -122,7 +122,7 @@ function CouchDB (url) {
       process.on('exit', function() {
         var names = Object.keys(pending_dbs);
         if(names.length > 0) {
-          util.puts("Still have pending dbs: " + util.inspect(names));
+          self.log.debug('Still have %d pending dbs', names.length)
         }
       })
 
