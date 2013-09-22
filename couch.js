@@ -103,7 +103,6 @@ function CouchDB (url) {
       var db = new Database;
       db.couch = self
       db.name = db_name;
-      db.log.setLevel(self.log.level.levelStr);
 
       pending_dbs[db.name] = db;
 
