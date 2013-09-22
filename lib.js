@@ -14,11 +14,9 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-var log4js = require('log4js')
-  , assert = require('assert')
-  , uglify = require('uglify-js')
-  , defaultable = require('defaultable')
-  ;
+var assert = require('assert')
+var uglify = require('uglify-js')
+var defaultable = require('defaultable')
 
 defaultable(module,
   { 'log_label': 'probe_couchdb'
@@ -37,22 +35,15 @@ module.exports = { "getLogger"  : getLogger
 
 
 function getLogger(label) {
-  var log = log4js.getLogger(scrub_creds(label || DEFS.log_label));
-  log.setLevel(DEFS.log_level);
+  var log = { 'trace': console.log
+            , 'debug': console.log
+            , 'info' : console.log
+            , 'warn' : console.error
+            , 'error': console.error
+            , 'fatal': console.error
+            }
 
-  // Scrub credentials.
-  ; ['trace', 'debug', 'info', 'warn', 'error', 'fatal'].forEach(function(level) {
-    var inner = log[level];
-    log[level] = log_scrubbed;
-
-    function log_scrubbed() {
-      var args = Array.prototype.slice.apply(arguments);
-      args[0] = scrub_creds(args[0]);
-      return inner.apply(this, args);
-    }
-  })
-
-  return log;
+  return log
 }
 
 var url_parts = /(https?:\/\/)([^:]+:[^@]+@)?(.*)$/;
