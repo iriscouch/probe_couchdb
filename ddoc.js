@@ -32,7 +32,7 @@ module.exports = { "DesignDocument": DesignDocument
 util.inherits(DesignDocument, Emitter);
 function DesignDocument () {
   var self = this;
-  Emitter.call(self);
+  Emitter.call(self, 'ddoc');
 
   self.db = null;
   self.id = null;

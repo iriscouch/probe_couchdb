@@ -14,9 +14,12 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
+var debug = require('debug')
 var assert = require('assert')
 var uglify = require('uglify-js')
 var defaultable = require('defaultable')
+
+var package = require('./package.json')
 
 defaultable(module,
   { 'log_label': 'probe_couchdb'
@@ -34,13 +37,18 @@ module.exports = { "getLogger"  : getLogger
                  };
 
 
-function getLogger(label) {
-  var log = { 'trace': noop
-            , 'debug': noop
-            , 'info' : console.log
-            , 'warn' : console.error
-            , 'error': console.error
-            , 'fatal': console.error
+function getLogger(sub_label) {
+  var label = package.name
+  if(sub_label)
+    label += ':' + sub_label
+
+  var logger = debug(label)
+  var log = { 'trace': logger
+            , 'debug': logger
+            , 'info' : logger
+            , 'warn' : logger
+            , 'error': logger
+            , 'fatal': logger
             }
 
   return log

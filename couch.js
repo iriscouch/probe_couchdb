@@ -38,7 +38,7 @@ module.exports = { "CouchDB": CouchDB
 util.inherits(CouchDB, Emitter);
 function CouchDB (url) {
   var self = this;
-  Emitter.call(self);
+  Emitter.call(self, 'server');
 
   self.url = url || DEFS.url || null;
   self.do_dbs   = DEFS.do_dbs;

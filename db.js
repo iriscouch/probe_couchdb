@@ -35,7 +35,7 @@ module.exports = { "Database": Database
 util.inherits(Database, Emitter);
 function Database () {
   var self = this;
-  Emitter.call(self);
+  Emitter.call(self, 'db');
 
   self.couch = null;
   self.name = null;
