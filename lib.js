@@ -35,8 +35,8 @@ module.exports = { "getLogger"  : getLogger
 
 
 function getLogger(label) {
-  var log = { 'trace': console.log
-            , 'debug': console.log
+  var log = { 'trace': noop
+            , 'debug': noop
             , 'info' : console.log
             , 'warn' : console.error
             , 'error': console.error
@@ -121,5 +121,7 @@ function check_expr(source_code, type) {
 function isArray(obj) {
   return Array.isArray(obj);
 }
+
+function noop() {}
 
 }) // defaultable
